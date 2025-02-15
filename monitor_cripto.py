@@ -1,5 +1,7 @@
 import requests
 
+
+COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
 # def é a variável para criar uma função.
 def obter_preco(cripto="bitcoin", moeda="brl"):
     """
@@ -9,25 +11,22 @@ def obter_preco(cripto="bitcoin", moeda="brl"):
     :return: Preço da criptomoeda na moeda escolhida.
 
     """
-    url = f"https://api.coingecko.com/api/v3/simple/price?ids={cripto}&vs_currencies={moeda}"
+    url = f"{COINGECKO_API_URL}/simple/price"
 
+    parametros = {
+        "ids": cripto.lower(), # Nome da criptomoeda
+        "vs_currencies": moeda.lower() # Moeda de conversão
+    }
+    
     try:
         #Faz uma requisição para a API da CoinGecko.
-        resposta = requests.get(url)
+        resposta = requests.get(url, params=parametros)
         #Converte a resposta para um dicionário Python.
         dados = resposta.json()
 
-        if cripto in dados:
-            preco = dados[cripto][moeda]
-            return preco
-            #f"O preço do {cripto.capitalize()} é {preco} {moeda.upper()}"
-        else:
-            return None
-            #"Erro: Criptomoeda não encontrada."
-        
-    except  Exception as e:
+        return dados.get(cripto.lower(), {}).get(moeda.lower(), None)
+    except Exception as e:
         return None
-        # f"Erro ao obter dados: {e}"
     
 #Teste da função
 
