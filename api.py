@@ -1,4 +1,3 @@
-from pickle import GET
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
@@ -67,6 +66,34 @@ def top_criptos():
 def preco_cripto(cripto, moeda):
     preco = obter_preco(cripto, moeda)
     return jsonify({"cripto": cripto, "moeda": moeda, "preco": preco}) if preco else jsonify({"erro": "Criptomoeda não encontrada"}), 404
+
+@app.route('/historico-cripto', methods=["GET"])
+def historico_cripto():
+    cripto_id = request.args.get("id")
+    moeda = request.args.get("moeda")
+    dias = request.args.get("dias", default="30")
+    
+    try:
+       url = f"{COINGECKO_API_URL}/coins/{cripto_id}/market_chart"
+       parametros = {
+           "vs_currency": moeda,
+           "days": dias,
+           "interval": "daily"
+       } 
+       resposta = requests.get(url, params=parametros)
+       resposta.raise_for_status()
+       dados = resposta.json()
+       
+       #Formatar os dados para retornar apenas preços e datas
+       historico = {
+           "precos": dados["prices"], # Lista de [timestamp, preço]
+           "dias": dias
+       }
+       
+       return jsonify(historico)
+    except Exception as e:
+       print(f"Erro ao buscar histórico da criptomoeda: {e}")
+       return jsonify({"erro": "Erro ao buscar histórico da criptomoeda"}), 500
     
 if __name__ == "__main__":
     app.run(debug=True)
