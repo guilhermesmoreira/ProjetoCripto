@@ -1,3 +1,5 @@
+# Código para testar como é a interface do Python
+
 import tkinter as tk
 from tkinter import messagebox
 from monitor_cripto import obter_preco 

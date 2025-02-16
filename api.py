@@ -1,9 +1,11 @@
+from threading import Thread
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import requests
 import time
 from datetime import datetime, timedelta
 from monitor_cripto import obter_preco #Importando a função já existente para obter o preço da Criptomoeda
+from alertas import monitorar_preco
 
 app = Flask(__name__)
 CORS(app) #Esse comando permite ao React fazer requisições.
@@ -53,7 +55,7 @@ def obter_top_criptos():
         print(f"Erro ao buscar criptomoedas: {e}")  # Log para depuração
         return []
     
-    #Criação da rota para retornar as 10 principais criptos
+#Criação da rota para retornar as 10 principais criptos
 @app.route('/top-criptos', methods=["GET"])
 def top_criptos():
     criptos = obter_top_criptos()
@@ -94,6 +96,27 @@ def historico_cripto():
     except Exception as e:
        print(f"Erro ao buscar histórico da criptomoeda: {e}")
        return jsonify({"erro": "Erro ao buscar histórico da criptomoeda"}), 500
+   
+#Função que chama o monitoramento de preço
+@app.route("/monitorar-preco", methods=["POST"])
+def monitorar_preco_cripto():
+    data = request.get_json()
+
+    cripto = data.get("cripto")
+    moeda = data.get("moeda")
+    preco_alvo = data.get("preco_alvo")
+
+    if not cripto or not moeda or preco_alvo is None:
+        return jsonify({"erro": "Parâmetros inválidos!"}), 400
+
+    def iniciar_monitoramento():
+        monitorar_preco(cripto, moeda, preco_alvo)
+
+    # Rodar a função de monitoramento em uma thread separada para não bloquear o servidor
+    thread = Thread(target=iniciar_monitoramento)
+    thread.start()
+
+    return jsonify({"message": f"Iniciando monitoramento para {cripto} em {moeda} até atingir o preço de {preco_alvo}."})
     
 if __name__ == "__main__":
     app.run(debug=True)

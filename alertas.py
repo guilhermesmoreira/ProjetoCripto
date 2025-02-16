@@ -5,12 +5,8 @@ from monitor_cripto import obter_preco
 
 def monitorar_preco(cripto, moeda, preco_alvo, intervalo=60):
     """
-    Monitora o preço da criptomoeda e envia um alerta quando atingir o valor desejado.
-    
-    :param cripto: Nome da criptomoeda (ex: "bitcoin").
-    :param moeda: Moeda para conversão (ex: "brl").
-    :param preco_alvo: Valor para ativar o alerta.
-    :param intervalo: Tempo entre as verificações (em segundos).
+    Função que monitorará o preço da criptomoeda a cada `intervalo` segundos,
+    até que o preço-alvo seja atingido, e então envia uma notificação.
     """
     print(f"Monitorando {cripto}... Alvo: {preco_alvo} {moeda.upper()}")
 
@@ -36,12 +32,12 @@ def monitorar_preco(cripto, moeda, preco_alvo, intervalo=60):
 
         time.sleep(intervalo)  # Aguarda antes de verificar novamente
 
-if __name__ == "__main__":
-    cripto = input("Digite a criptomoeda (ex: bitcoin, ethereum): ").lower()
-    moeda = input("Digite a moeda (ex: brl, usd, eur): ").lower()
+# if __name__ == "__main__":
+#     cripto = input("Digite a criptomoeda (ex: bitcoin, ethereum): ").lower()
+#     moeda = input("Digite a moeda (ex: brl, usd, eur): ").lower()
     
-    try:
-        preco_alvo = float(input(f"Digite o preço-alvo em {moeda.upper()}: "))
-        monitorar_preco(cripto, moeda, preco_alvo)
-    except ValueError:
-        print("Erro: O valor do preço-alvo deve ser um número válido.")
+#     try:
+#         preco_alvo = float(input(f"Digite o preço-alvo em {moeda.upper()}: "))
+#         monitorar_preco(cripto, moeda, preco_alvo)
+#     except ValueError:
+#         print("Erro: O valor do preço-alvo deve ser um número válido.")
